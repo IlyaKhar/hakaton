@@ -1,0 +1,10 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/main ./cmd/api"  # что именно собирать
+bin = "tmp/main"                          # что запускать
+full_bin = "tmp/main"                     # можно без переменных окружения
+include_ext = ["go"]                      # какие файлы слушать
+exclude_dir = ["tmp", "docs"]             # чтобы не триггериться на сгенерённые файлы
+delay = 1000                              # мс debounce

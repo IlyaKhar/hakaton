@@ -14,15 +14,20 @@ type Server struct {
 }
 
 // NewServer инициализирует Fiber, middleware и основные роуты API.
-func NewServer(_ *sql.DB, cfg config.Config) *Server {
+func NewServer(db *sql.DB, cfg config.Config) *Server {
 	app := fiber.New()
 
 	middleware.RegisterBasicMiddleware(app)
 
-	api := app.Group("/api")
-	v1 := api.Group("/v1")
-
-	routes.RegisterV1Routes(v1, cfg)
+	// Вешаем все маршруты на префикс /api/v1
+	// Эндпоинты:
+	//   - GET  /api/v1/health
+	//   - GET  /api/v1/swagger/index.html
+	//   - POST /api/v1/auth/register
+	//   - POST /api/v1/auth/login
+	//   - GET  /api/v1/auth/me
+	apiV1 := app.Group("/api/v1")
+	routes.RegisterV1Routes(apiV1, db, cfg)
 
 	return &Server{app: app}
 }
@@ -31,4 +36,3 @@ func NewServer(_ *sql.DB, cfg config.Config) *Server {
 func (s *Server) Listen(addr string) error {
 	return s.app.Listen(addr)
 }
-

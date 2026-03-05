@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres:16
+    container_name: subs-postgres
+    environment:
+      POSTGRES_USER: subs
+      POSTGRES_PASSWORD: subs_pass
+      POSTGRES_DB: subs
+    ports:
+      - "5433:5432"                # было "5432:5432"
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d

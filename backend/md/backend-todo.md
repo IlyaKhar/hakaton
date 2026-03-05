@@ -6,6 +6,101 @@
 
 ---
 
+## 0. Общая архитектура проекта (кратко)
+
+- **Структура (из `backend-mvp-spec.md`, строки 20–34):**
+
+```text
+backend/
+  cmd/api/main.go
+  internal/
+    config/
+    db/
+    middleware/
+    auth/
+    users/
+    subscriptions/
+    sources/
+    analytics/
+    forecast/
+    notifications/
+    recommendations/
+    common/
+```
+
+- **Что за что отвечает (по папкам):**
+  - `cmd/api/main.go`  
+    - Точка входа. Загружает конфиг, собирает DSN для Supabase, коннектится к БД, создаёт сервер и запускает `Listen`.
+  - `internal/config`  
+    - Работа с `.env`.  
+    - Файл `config.go`: структура `Config` + функция `Load()`, которая читает `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `PORT`, `JWT_SECRET`, `REFRESH_SECRET`, `BASE_URL` и т.п.
+  - `internal/db`  
+    - Подключение к Postgres (Supabase / pooler).  
+    - Файл `db.go`: функция `Connect(dsn string) (*sql.DB, error)`.
+  - `internal/middleware`  
+    - Общие middleware для Fiber: логирование, recover, CORS, **auth-middleware для JWT**.  
+    - Здесь будет файл `auth.go`, который:
+      - достаёт токен из заголовка `Authorization: Bearer ...`,
+      - валидирует его через пакет `internal/auth`,
+      - кладёт `userID` в контекст Fiber.
+  - `internal/auth`  
+    - Логика, не завязанная на HTTP: генерация и валидация JWT, возможно, вспомогательные функции для паролей.  
+    - Файл `jwt.go`: `GenerateToken(userID string)`, `ParseToken(token string)`.  
+    - Можно добавить `password.go` с обёртками над `bcrypt`.
+  - `internal/users`  
+    - Работа с таблицей `users` в Supabase.  
+    - `model.go`: структура `User`.  
+    - `repository.go`: `CreateUser`, `GetUserByEmail`, `GetUserByID`.  
+    - Эти функции используют `*sql.DB` из `internal/db`.
+  - `internal/subscriptions`  
+    - Вся логика по таблице `subscriptions`: CRUD, cancel/pause, связь с `transactions`.  
+    - `model.go`, `repository.go`, `http.go` (хэндлеры и `RegisterRoutes`).
+  - `internal/sources`  
+    - Таблица `subscription_sources` + endpoints `/sources` и `/sources/:id/upload`.  
+    - Разбор загруженного файла, создание `transactions` и возможных `subscriptions`.
+  - `internal/analytics`  
+    - Чистые функции, которые делают агрегирующие SQL-запросы по `transactions` и возвращают данные для графиков.  
+    - HTTP-слой (`http.go`) только разбирает query-параметры и зовёт эти функции.
+  - `internal/forecast`  
+    - Сервис, который по списку подписок считает месячную/годовую сумму и возможную экономию.  
+    - Тоже разделён на сервис (`service.go`) и http-обёртку (`http.go`).
+  - `internal/notifications`  
+    - Таблицы `notification_settings` и `notifications`.  
+    - CRUD для настроек + выдача списка уведомлений.  
+    - Фоновая логика по генерации уведомлений (может быть отдельным файлом `worker.go`).
+  - `internal/recommendations`  
+    - Таблица `recommendation_alternatives` и логика подбора альтернатив по категории и цене.  
+    - HTTP-роуты `/recommendations` и `/recommendations/subscription/:id`.
+  - `internal/common`  
+    - Общие типы и хелперы, например:
+      - `response.go` — функции `JSONError`, базовые форматы ответов.
+      - Общие ошибки, константы и т.п.
+
+- **Поток данных:**
+  1. HTTP-запрос приходит в Fiber роут (`/api/v1/...`).
+  2. Через middleware получаем `userID` (если роут защищён).
+  3. Хэндлер вызывает функции из доменного пакета (service/repository).
+  4. Доменный код ходит в Supabase через `*sql.DB`.
+  5. Результат возвращаем в JSON.
+
+---
+
+## 0.1. Этапы реализации (high-level план)
+
+1. **Схема БД в Supabase** — создать все таблицы по `backend-mvp-spec.md`.
+2. **Инфраструктура** — убедиться, что Go-сервер поднимается и ходит в Supabase.
+3. **Пользователи и авторизация** — таблица `users`, пакет `users`, пакет `auth`, JWT, middleware.
+4. **Подписки (CRUD)** — список/деталь/создание/обновление подписок.
+5. **Источники и загрузка выписки** — `subscription_sources`, upload файла, создание `transactions`.
+6. **Аналитика** — summary, категории, сервисы.
+7. **Прогноз на год** — расчёт по подпискам.
+8. **Уведомления** — настройки и сами уведомления.
+9. **Рекомендации и быстрые действия (cancel/pause)**.
+
+Ниже эти этапы расписаны более детально по файлам и шагам.
+
+---
+
 ### 1. Поднять окружение и проверить, что сервер стартует
 
 - **Шаги**:
@@ -18,18 +113,18 @@
     - `GET /api/v1/health` отдаёт `{ "status": "ok" }`.
 
 - **Файлы**:
-  - `backend/go.mod`  
+  - `backend/go.mod`
     - Здесь уже подключены зависимости `fiber`, `godotenv`, `pq` (драйвер Postgres). Обычно править не нужно, только иногда добавлять новые либы через `go get`.
-  - `backend/cmd/api/main.go`  
+  - `backend/cmd/api/main.go`
     - Точка входа. Загружает конфиг, коннектится к Supabase (Postgres), поднимает Fiber-сервер.  
     - Если что-то падает при старте — лог смотреть отсюда.
-  - `backend/internal/config/config.go`  
+  - `backend/internal/config/config.go`
     - Читает `.env` (в том числе `DATABASE_URL` Supabase, `HTTP_PORT`).  
     - Если нужно добавить новые настройки (секрет для JWT и т.п.) — добавляешь поля в `Config` + читаешь через `os.Getenv`.
-  - `backend/internal/server/server.go`  
+  - `backend/internal/server/server.go`
     - Создаёт `fiber.App`, вешает middleware, регистрирует роуты `/api/v1`.  
     - Сюда ты будешь добавлять зависимостями БД и конфиг в роуты (чтобы в хэндлерах был доступ к DB).
-  - `backend/internal/server/routes/routes.go`  
+  - `backend/internal/server/routes/routes.go`
     - Реестр всех v1-роутов.  
     - Здесь подключаются модули: `auth`, позже добавишь `subscriptions`, `sources`, `analytics` и т.д.
 
@@ -50,10 +145,10 @@
     - Оставить только чтение `DATABASE_URL` и падать с ошибкой, если он пустой (чтобы не забыть настроить).
 
 - **Файлы (что в них должно быть)**:
-  - `backend/internal/config/config.go`  
+  - `backend/internal/config/config.go`
     - Функция `Load()` читает `DATABASE_URL` из env и пробрасывает его в `Config.DatabaseURL`.  
     - Здесь же можно позже добавить `JWT_SECRET`, `SUPABASE_SCHEMA` и т.п.
-  - `backend/internal/db/db.go`  
+  - `backend/internal/db/db.go`
     - Функция `Connect(dsn string)` просто вызывает `sql.Open("postgres", dsn)` и `Ping()`.  
     - Никакой магии под Supabase не нужно — с точки зрения кода это обычный Postgres.
 
@@ -211,7 +306,7 @@
          - `getCategories`
          - `getServices`
      - В хэндлерах:
-       - Разобрать query-параметры (period/from/to).
+     - Разобрать query-параметры (period/from/to).
        - Вызвать соответствующую функцию из `service.go` и вернуть JSON.
 
 - **Подсказка**:
@@ -236,9 +331,9 @@
          - Опционально: помечает подписки с низким использованием и считает возможную экономию.
   2. HTTP-хэндлер:
      - В `http.go` пакета `forecast`:
-       - Получает `userID` из контекста.
-       - Вызвает `BuildYearForecast`.
-       - Возвращает JSON с полями `total_year_cost`, `baseline_monthly_cost`, `economy_if_cancel_low_usage`.
+     - Получает `userID` из контекста.
+     - Вызвает `BuildYearForecast`.
+     - Возвращает JSON с полями `total_year_cost`, `baseline_monthly_cost`, `economy_if_cancel_low_usage`.
 
 ---
 

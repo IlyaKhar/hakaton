@@ -1,0 +1,1880 @@
+definitions:
+  github_com_hakaton_subscriptions-backend_internal_analytics.CategoryStat:
+    properties:
+      amount:
+        type: number
+      category:
+        type: string
+    type: object
+  github_com_hakaton_subscriptions-backend_internal_analytics.ServiceStat:
+    properties:
+      amount:
+        type: number
+      serviceName:
+        type: string
+    type: object
+  github_com_hakaton_subscriptions-backend_internal_users.User:
+    properties:
+      cloudPasswordEnabled:
+        type: boolean
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  internal_analytics.CategoryStat:
+    properties:
+      amount:
+        type: number
+      category:
+        type: string
+    type: object
+  internal_analytics.ServiceStat:
+    properties:
+      amount:
+        type: number
+      serviceName:
+        type: string
+    type: object
+  internal_analytics.SummaryResult:
+    properties:
+      changeAbsolute:
+        type: number
+      changePercentage:
+        type: number
+      previousTotal:
+        type: number
+      totalAmount:
+        type: number
+    type: object
+  internal_dashboard.SummaryResponse:
+    properties:
+      activeSubscriptions:
+        type: integer
+      canceledSubscriptions:
+        type: integer
+      currency:
+        type: string
+      defaultCardLast4:
+        type: string
+      monthSpend:
+        type: number
+      pausedSubscriptions:
+        type: integer
+      topCategories:
+        items:
+          $ref: '#/definitions/github_com_hakaton_subscriptions-backend_internal_analytics.CategoryStat'
+        type: array
+      topServices:
+        items:
+          $ref: '#/definitions/github_com_hakaton_subscriptions-backend_internal_analytics.ServiceStat'
+        type: array
+      totalCards:
+        type: integer
+      totalSubscriptions:
+        type: integer
+    type: object
+  internal_forecast.YearForecast:
+    properties:
+      baselineMonthlyCost:
+        type: number
+      economyIfCancelLowUsed:
+        type: number
+      totalYearCost:
+        type: number
+    type: object
+  internal_notifications.Notification:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      payload:
+        additionalProperties: {}
+        type: object
+      readAt:
+        type: string
+      status:
+        type: string
+      subscriptionId:
+        type: string
+      type:
+        type: string
+      userId:
+        type: string
+    type: object
+  internal_notifications.NotificationSetting:
+    properties:
+      channels:
+        additionalProperties: {}
+        type: object
+      enabled:
+        type: boolean
+      id:
+        type: string
+      type:
+        type: string
+      userId:
+        type: string
+    type: object
+  internal_payment_cards.PaymentCard:
+    properties:
+      cardMask:
+        description: маска карты (**** **** **** 1234)
+        type: string
+      cardType:
+        description: Visa, Mastercard, Mir и т.д.
+        type: string
+      createdAt:
+        type: string
+      expiryMonth:
+        description: месяц (1-12)
+        type: integer
+      expiryYear:
+        description: год (2024, 2025 и т.д.)
+        type: integer
+      holderName:
+        description: имя держателя
+        type: string
+      id:
+        type: string
+      isDefault:
+        description: карта по умолчанию
+        type: boolean
+      lastFourDigits:
+        description: последние 4 цифры
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  internal_payment_cards.createCardRequest:
+    properties:
+      cardNumber:
+        description: полный номер карты (будет обработан и сохранены только последние
+          4 цифры)
+        type: string
+      cardType:
+        description: Visa, Mastercard, Mir и т.д.
+        type: string
+      expiryMonth:
+        description: 1-12
+        type: integer
+      expiryYear:
+        description: 2024, 2025 и т.д.
+        type: integer
+      holderName:
+        type: string
+      isDefault:
+        description: сделать карту по умолчанию
+        type: boolean
+    type: object
+  internal_recommendations.RecommendationAlternative:
+    properties:
+      billingPeriod:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      serviceName:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.changePasswordRequest:
+    properties:
+      newPassword:
+        type: string
+      oldPassword:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.forgotPasswordRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.loginRequest:
+    properties:
+      cloudPassword:
+        description: опционально, требуется если установлен
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.registerRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.resetPasswordRequest:
+    properties:
+      password:
+        type: string
+      resetToken:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.setupCloudPasswordRequest:
+    properties:
+      cloudPassword:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.updateProfileRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.verifyCloudPasswordRequest:
+    properties:
+      code:
+        type: string
+    type: object
+  internal_server_routes_v1_auth.verifyCodeRequest:
+    properties:
+      code:
+        type: string
+    type: object
+  internal_sources.SubscriptionSource:
+    description: Источник данных для автоматического сбора информации о подписках
+    properties:
+      createdAt:
+        example: "2024-03-01T12:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      meta:
+        additionalProperties: {}
+        description: 'Для email: {"email": "test@mail.ru"}'
+        type: object
+      provider:
+        description: '"mailru", "yandex", "gmail" для email'
+        example: mailru
+        type: string
+      status:
+        description: '"pending", "connected", "error"'
+        example: pending
+        type: string
+      type:
+        description: '"email", "bank", "manual"'
+        example: email
+        type: string
+      updatedAt:
+        example: "2024-03-01T12:00:00Z"
+        type: string
+      userId:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  internal_sources.createSourceRequest:
+    properties:
+      meta:
+        additionalProperties: {}
+        description: Метаданные источника. Для email обязательно указать meta.email
+        type: object
+      provider:
+        description: 'Провайдер: "mailru", "yandex", "gmail" для email; "sberbank",
+          "tinkoff" и т.д. для bank'
+        example: mailru
+        type: string
+      type:
+        description: 'Тип источника: "email", "bank" или "manual"'
+        example: email
+        type: string
+    type: object
+  internal_subscriptions.Subscription:
+    properties:
+      billingPeriod:
+        type: string
+      cancelUrl:
+        type: string
+      category:
+        type: string
+      createdAt:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      nextChargeAt:
+        type: string
+      price:
+        type: number
+      serviceName:
+        type: string
+      status:
+        type: string
+      supportEmail:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  internal_subscriptions.createSubscriptionRequest:
+    properties:
+      billingPeriod:
+        type: string
+      category:
+        type: string
+      currency:
+        type: string
+      nextChargeAt:
+        type: string
+      price:
+        type: number
+      serviceName:
+        type: string
+    type: object
+  internal_subscriptions.updateSubscriptionRequest:
+    properties:
+      billingPeriod:
+        type: string
+      cancelUrl:
+        type: string
+      category:
+        type: string
+      currency:
+        type: string
+      nextChargeAt:
+        type: string
+      price:
+        type: number
+      serviceName:
+        type: string
+      status:
+        type: string
+      supportEmail:
+        type: string
+    type: object
+  internal_transactions.Transaction:
+    properties:
+      amount:
+        type: number
+      chargedAt:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      rawDescription:
+        type: string
+      sourceId:
+        type: string
+      subscriptionId:
+        type: string
+      userId:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API для управления подписками пользователей
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Subscriptions API
+  version: "1.0"
+paths:
+  /analytics/categories:
+    get:
+      description: Возвращает суммы по категориям за выбранный период
+      parameters:
+      - default: month
+        description: Период (month|year)
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_analytics.CategoryStat'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Аналитика по категориям
+      tags:
+      - analytics
+  /analytics/services:
+    get:
+      description: Возвращает суммы по конкретным сервисам за выбранный период
+      parameters:
+      - default: month
+        description: Период (month|year)
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_analytics.ServiceStat'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Аналитика по сервисам
+      tags:
+      - analytics
+  /analytics/summary:
+    get:
+      description: Возвращает общие суммы и метрики по подпискам за период
+      parameters:
+      - default: month
+        description: Период (month|year)
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_analytics.SummaryResult'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Сводная аналитика
+      tags:
+      - analytics
+  /auth/change-password:
+    post:
+      consumes:
+      - application/json
+      description: Изменяет основной пароль пользователя
+      parameters:
+      - description: Старый и новый пароль
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.changePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Изменение пароля
+      tags:
+      - auth
+  /auth/cloud-password:
+    post:
+      consumes:
+      - application/json
+      description: Отправляет код подтверждения на email для установки облачного пароля
+      parameters:
+      - description: Облачный пароль
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.setupCloudPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Установка облачного пароля
+      tags:
+      - auth
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Отправляет код восстановления на email пользователя
+      parameters:
+      - description: Email пользователя
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.forgotPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Запрос на восстановление пароля
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет email/пароль и возвращает JWT токен. Если установлен
+        облачный пароль, требуется также cloudPassword
+      parameters:
+      - description: Данные для авторизации (cloudPassword опционален, требуется если
+          установлен облачный пароль)
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Авторизация пользователя
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Выход из аккаунта (JWT stateless, поэтому просто возвращает успех)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Выход из аккаунта
+      tags:
+      - auth
+  /auth/me:
+    get:
+      description: Возвращает данные текущего пользователя по JWT токену, включая
+        привязанные платежные карты
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'user: объект пользователя, cards: массив карт'
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Текущий пользователь
+      tags:
+      - auth
+    put:
+      consumes:
+      - application/json
+      description: Обновляет имя и/или email пользователя
+      parameters:
+      - description: Новые данные профиля
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.updateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_hakaton_subscriptions-backend_internal_users.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновление профиля
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Создаёт нового пользователя и возвращает JWT токен
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Регистрация пользователя
+      tags:
+      - auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Устанавливает новый пароль по токену из verify-code
+      parameters:
+      - description: Токен сброса и новый пароль
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.resetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Сброс пароля
+      tags:
+      - auth
+  /auth/verify-cloud-password:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет код из email и устанавливает облачный пароль
+      parameters:
+      - description: Код подтверждения и облачный пароль
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.verifyCloudPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Подтверждение облачного пароля
+      tags:
+      - auth
+  /auth/verify-code:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет код восстановления пароля и возвращает токен для сброса
+        пароля
+      parameters:
+      - description: Код восстановления
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_server_routes_v1_auth.verifyCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Проверка кода восстановления
+      tags:
+      - auth
+  /dashboard:
+    get:
+      description: 'Возвращает агрегированные данные для главного экрана: подписки,
+        карты, траты за месяц'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_dashboard.SummaryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Дашборд главного экрана
+      tags:
+      - dashboard
+  /forecast/year:
+    get:
+      description: Строит прогноз трат на подписки на год вперёд
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_forecast.YearForecast'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Годовой прогноз трат
+      tags:
+      - forecast
+  /notifications:
+    get:
+      description: Возвращает список уведомлений пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_notifications.Notification'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список уведомлений
+      tags:
+      - notifications
+  /notifications/{id}/read:
+    put:
+      description: Отмечает выбранное уведомление как прочитанное
+      parameters:
+      - description: ID уведомления
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: успешно
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Пометить уведомление прочитанным
+      tags:
+      - notifications
+  /notifications/settings:
+    get:
+      description: Возвращает текущие настройки уведомлений пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_notifications.NotificationSetting'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить настройки уведомлений
+      tags:
+      - notifications
+    put:
+      consumes:
+      - application/json
+      description: Сохраняет список настроек уведомлений для пользователя
+      parameters:
+      - description: Настройки уведомлений
+        in: body
+        name: payload
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/internal_notifications.NotificationSetting'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: успешно
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить настройки уведомлений
+      tags:
+      - notifications
+  /payment-cards:
+    get:
+      description: Возвращает все платежные карты текущего пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_payment_cards.PaymentCard'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Список карт
+      tags:
+      - payment-cards
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новую платежную карту для текущего пользователя
+      parameters:
+      - description: Данные карты
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_payment_cards.createCardRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_payment_cards.PaymentCard'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Добавить карту
+      tags:
+      - payment-cards
+  /payment-cards/{id}:
+    delete:
+      description: Удаляет платежную карту пользователя
+      parameters:
+      - description: ID карты
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удалить карту
+      tags:
+      - payment-cards
+  /recommendations:
+    get:
+      description: Возвращает альтернативные сервисы в категории дешевле указанной
+        цены
+      parameters:
+      - description: Категория подписки
+        in: query
+        name: category
+        required: true
+        type: string
+      - default: 1000000
+        description: Максимальная цена
+        in: query
+        name: maxPrice
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_recommendations.RecommendationAlternative'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Рекомендации по категории
+      tags:
+      - recommendations
+  /recommendations/{id}:
+    get:
+      description: Возвращает альтернативные сервисы для конкретной подписки пользователя
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_recommendations.RecommendationAlternative'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Рекомендации для подписки
+      tags:
+      - recommendations
+  /sources:
+    get:
+      description: Возвращает все подключённые источники пользователя (банки, почта
+        и т.п.)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_sources.SubscriptionSource'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Список источников
+      tags:
+      - sources
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый источник данных подписок. Для почты обязательно указать
+        email в meta.email
+      parameters:
+      - description: Параметры источника
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_sources.createSourceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_sources.SubscriptionSource'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создать источник
+      tags:
+      - sources
+  /sources/{id}/mark-connected:
+    post:
+      description: Обновляет статус источника на connected
+      parameters:
+      - description: ID источника
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: успешно
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Пометить источник как подключённый
+      tags:
+      - sources
+  /sources/{id}/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Принимает файл выписки (текст, CSV), парсит и создаёт транзакции
+      parameters:
+      - description: ID источника
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Файл выписки
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'transactionsCreated: количество созданных транзакций'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Загрузить выписку/чеки
+      tags:
+      - sources
+  /sources/oauth/{provider}/authorize:
+    get:
+      description: Возвращает URL для редиректа пользователя на страницу авторизации
+        провайдера
+      parameters:
+      - description: 'Провайдер: mailru, yandex, gmail'
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: authorizationUrl
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получить URL для OAuth авторизации
+      tags:
+      - sources
+  /sources/oauth/{provider}/callback:
+    get:
+      description: Обрабатывает callback от провайдера, обменивает code на token и
+        создаёт источник
+      parameters:
+      - description: 'Провайдер: mailru, yandex, gmail'
+        in: path
+        name: provider
+        required: true
+        type: string
+      - description: Authorization code от провайдера
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: State для проверки
+        in: query
+        name: state
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_sources.SubscriptionSource'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: OAuth callback
+      tags:
+      - sources
+  /sources/providers:
+    get:
+      description: Возвращает список доступных провайдеров (банки, почта) для подключения
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Список провайдеров
+      tags:
+      - sources
+  /subscriptions:
+    get:
+      description: Возвращает все подписки текущего пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_subscriptions.Subscription'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список подписок пользователя
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новую подписку для текущего пользователя
+      parameters:
+      - description: Параметры подписки
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_subscriptions.createSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_subscriptions.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать подписку
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    get:
+      description: Возвращает одну подписку по ID
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_subscriptions.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Детали подписки
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      description: Обновляет параметры существующей подписки
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Новые параметры подписки
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/internal_subscriptions.updateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_subscriptions.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить подписку
+      tags:
+      - subscriptions
+  /subscriptions/{id}/cancel-intent:
+    post:
+      description: Обновляет статус подписки на pending_cancel
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: успешно
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Пометить подписку как в процессе отмены
+      tags:
+      - subscriptions
+  /subscriptions/{id}/confirm-cancel:
+    post:
+      description: Обновляет статус подписки на cancelled
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: успешно
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Отменить подписку
+      tags:
+      - subscriptions
+  /subscriptions/{id}/pause:
+    post:
+      description: Обновляет статус подписки на paused
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: успешно
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Поставить подписку на паузу
+      tags:
+      - subscriptions
+  /transactions:
+    get:
+      description: Возвращает список транзакций пользователя за период
+      parameters:
+      - description: Дата начала периода (YYYY-MM-DD)
+        in: query
+        name: from
+        type: string
+      - description: Дата конца периода (YYYY-MM-DD)
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_transactions.Transaction'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список транзакций
+      tags:
+      - transactions
+  /transactions/{id}:
+    get:
+      description: Возвращает детальную информацию по одной транзакции
+      parameters:
+      - description: ID транзакции
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_transactions.Transaction'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Детали транзакции
+      tags:
+      - transactions
+securityDefinitions:
+  BearerAuth:
+    description: Введите JWT токен
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
